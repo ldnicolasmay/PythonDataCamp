@@ -1,0 +1,9 @@
+.idea/*
+.vscode/*
+venv/*
+*.csv
+*.txt
+*.zip
+*.tsv
+*.TXT
+*.pdf
