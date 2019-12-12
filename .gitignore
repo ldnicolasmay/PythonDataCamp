@@ -7,3 +7,10 @@ venv/*
 *.tsv
 *.TXT
 *.pdf
+test.py
+*.sqlite
+*.hdf5
+*.xls*
+*.dta
+*.pkl
+*.sas7bdat
