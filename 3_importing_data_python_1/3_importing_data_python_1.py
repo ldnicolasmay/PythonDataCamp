@@ -235,3 +235,103 @@ type(data[('strain')][('Strain')].value)
 # filename = base_dir + "foobar.mat"
 # mat = scipy.io.loadmat(filename)
 # type(mat)
+
+
+
+# 3 Working with Relational Databases in Python
+
+# Introduction to Relational Databases
+
+# ... video blah blah blah ...
+
+
+# Creating a Database Engine in Python
+
+from sqlalchemy import create_engine
+
+engine = create_engine('sqlite:///' + base_dir + 'Chinook.sqlite')
+
+table_names = engine.table_names()
+table_names
+
+
+# Querying Relational Databases in Python
+
+# SQL query workflow w/ Python:
+#   1. Import packages and functions
+#   2. Create the database engine
+#   3. Connect to the engine
+#   4. Query the database
+#   5. Save query result to a DataFrame
+#   6. Close the engine connection
+
+from sqlalchemy import create_engine
+import pandas as pd
+
+engine = create_engine('sqlite:///' + base_dir + 'Chinook.sqlite')
+
+con = engine.connect()
+
+rs = con.execute("SELECT * FROM Album;")  # results of query
+df = pd.DataFrame(rs.fetchall())
+df.columns = rs.keys()
+df.head()
+
+rs = con.execute("SELECT * FROM Artist;")
+df = pd.DataFrame(rs.fetchall())
+df.columns = rs.keys()
+df.head()
+
+con.close()
+
+# using a context manager instead of connect/close
+with engine.connect() as con:
+    rs = con.execute("SELECT CustomerId, FirstName, LastName FROM Customer;")
+    df = pd.DataFrame(rs.fetchmany(size=10))
+    df.columns = rs.keys()
+df
+
+with engine.connect() as con:
+    rs = con.execute("SELECT * FROM Employee WHERE EmployeeId >= 6;")
+    df = pd.DataFrame(rs.fetchall())
+    df.columns = rs.keys()
+df
+
+with engine.connect() as con:
+    rs = con.execute("SELECT * FROM Employee ORDER BY BirthDate;")
+    df = pd.DataFrame(rs.fetchall())
+    df.columns = rs.keys()
+df
+
+
+# Querying Relational Database Directly with pandas
+
+engine = create_engine('sqlite:///' + base_dir + 'Chinook.sqlite')
+
+df = pd.read_sql_query(sql="SELECT * FROM Invoice;", con=engine)
+df
+
+df = pd.read_sql_query("SELECT * FROM Employee " + 
+                       "WHERE EmployeeId >= 6 " + 
+                       "ORDER BY BirthDate",
+                       engine)
+df
+
+
+# Advance Querying: Exploiting Table Relationships
+
+engine = create_engine('sqlite:///' + base_dir + 'Chinook.sqlite')
+
+pd.read_sql_query("SELECT * FROM Album;", engine)
+pd.read_sql_query("SELECT * FROM Artist;", engine)
+
+q = "SELECT Title, Name FROM Album " + \
+    "INNER JOIN Artist ON Album.ArtistID = Artist.ArtistID;"
+df = pd.read_sql_query(q, engine)
+df
+
+q = "SELECT * FROM PlaylistTrack " + \
+    "INNER JOIN Track ON PlaylistTrack.TrackId = Track.TrackId " + \
+    "WHERE Milliseconds < 250000"
+df = pd.read_sql_query(q, engine)
+df
