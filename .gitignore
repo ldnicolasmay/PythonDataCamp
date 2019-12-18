@@ -1,6 +1,7 @@
 .idea/*
 .vscode/*
 venv/*
+__pycache__/*
 *.csv
 *.txt
 *.zip
@@ -14,3 +15,8 @@ test.py
 *.dta
 *.pkl
 *.sas7bdat
+tw_auth.py
+*.bak
+tweets.py
+st_class.py
+*.pyc
